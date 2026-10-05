@@ -2,7 +2,7 @@ name: Mobile-RDP
 on: workflow_dispatch
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
     - name: Connect Tailscale
       uses: tailscale/github-action@v2
@@ -10,7 +10,12 @@ jobs:
         authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
     - name: Setup Password
       run: |
-        net user runneradmin "${{ secrets.RDP_PASSWORD }}"
+        net user runneradmin "${{ secrets.RDP_PASSWORD }}" /add
+        net localgroup administrators runneradmin /add
     - name: Keep Alive
       run: |
-        while ($true) { Start-Sleep -Seconds 60 }
+        $Loop = 0
+        while ($Loop -lt 360) {
+          Start-Sleep -Seconds 60
+          $Loop++
+        }
